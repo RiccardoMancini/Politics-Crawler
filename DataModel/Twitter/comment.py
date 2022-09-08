@@ -1,5 +1,5 @@
 import json
-from DataModel.author import Author, AuthorEncoder
+from DataModel.Twitter.author import Author, AuthorEncoder
 import ast
 
 

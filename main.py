@@ -13,5 +13,5 @@ if __name__ == '__main__':
     for x in list(scraper.get_items())[:10]:
         print(x)'''
 
-    twitterScrape = TwitterScrape(profile='Alessan74809959').profile()
+    twitterScrape = TwitterScrape(profile='mybxstxrdsoul', max_results=10).profile_scrape()
 

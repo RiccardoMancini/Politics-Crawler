@@ -1,33 +1,31 @@
-from DataModel.reaction import Reaction, ReactionEncoder
-from DataModel.author import Author, AuthorEncoder
+from DataModel.Twitter.reaction import Reaction, ReactionEncoder
+from DataModel.Twitter.author import Author, AuthorEncoder
 import json
 import ast
 
 
-class Post:
-    '''
+class Tweet:
+    """
     This class defines the post data structure
-    '''
+    """
 
-    def __init__(self, id: str, author: Author, text: str, media_url: str, reaction: Reaction, media_path: str = None):
-        '''
+    def __init__(self, tweet_id: str, author: Author, text: str, media_url: str, reaction: Reaction):
+        """
         To init the object the information about
         :param author: the authors of the post
         :param text: the text connected to the post
         :param media_url: the url of the associated media
         :param reaction: the @Reaction datastructure
-        :param media_path: the absolute path where the image is saved
-        '''
-        self.id = id
+        """
+        self.tweet_id = tweet_id
         self.author = author
         self.text = text
         self.media_url = media_url
         self.reaction = reaction
-        self.media_path = media_path
 
 
-class PostEncoder(json.JSONEncoder):
-    def default(self, o: Post) -> dict:
+class TweetEncoder(json.JSONEncoder):
+    def default(self, o: Tweet) -> dict:
         dictionary = {}
         for k in o.__dict__:
             if k == 'author':
