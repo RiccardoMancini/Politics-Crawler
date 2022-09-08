@@ -6,6 +6,7 @@ from typing import List
 from DataModel.Twitter.author import Author
 from DataModel.Twitter.tweet import Tweet, TweetEncoder
 from DataModel.Twitter.reaction import Reaction
+import ast
 
 
 class TwitterScrape:
@@ -57,9 +58,11 @@ class TwitterScrape:
 
             tweets.append(tweet)
 
-        JSONTweetsList = [TweetEncoder().encode(tw) for tw in tweets]
-
+        JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
         print(JSONTweetsList)
+
+
+
 
     # TODO implementare lo scraping di hashtag
     # def hashtag(self):

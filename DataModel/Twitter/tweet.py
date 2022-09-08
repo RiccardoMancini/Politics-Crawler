@@ -29,8 +29,8 @@ class TweetEncoder(json.JSONEncoder):
         dictionary = {}
         for k in o.__dict__:
             if k == 'author':
-                dictionary[k] = AuthorEncoder().encode(o.__dict__[k])
-            if k == 'reaction':
+                dictionary[k] = ast.literal_eval(AuthorEncoder().encode(o.__dict__[k]))
+            elif k == 'reaction':
                 dictionary[k] = ast.literal_eval(ReactionEncoder().encode(o.__dict__[k]))
             else:
                 dictionary[k] = o.__dict__[k]
