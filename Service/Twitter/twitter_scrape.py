@@ -2,7 +2,7 @@ import collections
 from datetime import datetime
 import json
 import subprocess
-from typing import List
+from typing import List, Union
 from DataModel.Twitter.author import Author
 from DataModel.Twitter.tweet import Tweet, TweetEncoder
 from DataModel.Twitter.reaction import Reaction
@@ -39,6 +39,21 @@ class TwitterScrape:
                       user['favouritesCount'],
                       user['mediaCount'])
 
+    @staticmethod
+    def getMediaUrl(media: dict):
+        # print(len(media))
+        if not media:
+            return None
+        else:
+            for s_media in media:
+
+                if 'Video' in s_media['_type']:
+                    max_bit = None
+                    for var in s_media['variants']:
+                        max_bit = max_bit if max_bit is not None and var['bitrate'] is not None and \
+                                             max_bit > var['bitrate'] else var['bitrate']
+                        print(var['bitrate'], max_bit)
+
     def profile_scrape(self):
         subprocess.check_output(
             f'snscrape -n {self.max_results} --jsonl twitter-user {self.profileStr} >./Service/Twitter/twit_scrape.txt',
@@ -47,7 +62,8 @@ class TwitterScrape:
 
         tweets: List[Tweet] = []
         for res in results:
-            tweet = Tweet(res['id'],
+            self.getMediaUrl(res['media'])
+            '''tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
                           res['content'],
                           res['media'],
@@ -59,10 +75,7 @@ class TwitterScrape:
             tweets.append(tweet)
 
         JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
-        print(JSONTweetsList)
-
-
-
+        print(JSONTweetsList)'''
 
     # TODO implementare lo scraping di hashtag
     # def hashtag(self):
