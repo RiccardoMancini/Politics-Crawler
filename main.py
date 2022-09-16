@@ -14,4 +14,5 @@ if __name__ == '__main__':
         print(x)'''
 
     twitterScrape = TwitterScrape(profile='acmilan', max_results=10).profile_scrape()
+    twitterScrape2 = TwitterScrape(hashtag='acmilan', max_results=10).hashtag()
 

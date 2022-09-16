@@ -62,8 +62,8 @@ class TwitterScrape:
 
         tweets: List[Tweet] = []
         for res in results:
-            self.getMediaUrl(res['media'])
-            '''tweet = Tweet(res['id'],
+            #self.getMediaUrl(res['media'])
+            tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
                           res['content'],
                           res['media'],
@@ -75,7 +75,13 @@ class TwitterScrape:
             tweets.append(tweet)
 
         JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
-        print(JSONTweetsList)'''
+        print(JSONTweetsList)
 
     # TODO implementare lo scraping di hashtag
-    # def hashtag(self):
+    def hashtag(self):
+        subprocess.check_output(
+            f'snscrape -n {self.max_results} --jsonl twitter-hashtag {self.hashtagStr} >./Service/Twitter/twit_scrape.txt',
+            shell=True)
+        results = self.strToJSON()
+
+        print(results)
