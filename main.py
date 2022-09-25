@@ -13,6 +13,10 @@ if __name__ == '__main__':
     for x in list(scraper.get_items())[:10]:
         print(x)'''
 
-    twitterScrape = TwitterScrape(profile='acmilan', max_results=10).profile_scrape()
-    twitterScrape2 = TwitterScrape(hashtag='acmilan', max_results=10).hashtag()
+    # twitterScrape = TwitterScrape(profile='acmilan', max_results=10).profile_scrape()
+    # twitterScrape = TwitterScrape(hashtag='acmilan', max_results=10).hashtag()
+    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=20000).keyword_scrape()
+
+
+    # Per verificare il post: https://twitter.com/i/web/status/:id_post
 
