@@ -10,7 +10,8 @@ if __name__ == '__main__':
     mydb = myclient["twitter_scrape"]
 
     # Per verificare il post: https://twitter.com/i/web/status/:id_post
-    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=100).keyword_scrape(mydb)
+    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=1000).keyword_scrape(mydb)
+    #mydb.tweets.remove({})
 
 
     '''mydb.tweets.insert_many(twitterScrape)

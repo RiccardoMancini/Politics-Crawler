@@ -66,7 +66,7 @@ class TwitterScrape:
     def keyword_scrape(self, db: Database):
         subprocess.check_output(
             f'snscrape -n {self.max_results} --jsonl --progress twitter-search "{self.keyword} '
-            f'since:{datetime.date(2022, 9, 26)}" >'
+            f'since:{datetime.date(2022, 9, 23)} until:{datetime.date(2022, 9, 25)}" >'
             f'./Service/Twitter/twit_scrape.txt',
             shell=True)
         results = self.strToJSON()
@@ -74,7 +74,6 @@ class TwitterScrape:
         # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
         tweets: List[Tweet] = []
         for res in results:
-
             # self.getMediaUrl(res['media'])
             tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
@@ -89,14 +88,30 @@ class TwitterScrape:
 
         JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
         # --------------------------------
+        # .encode(encoding='UTF-8', errors='strict')
 
-        print(JSONTweetsList)
-        db.tweets.insert_many(JSONTweetsList)
-        '''x['reaction']['n_like']'''
-        '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)
-        return JSONTweetsList'''
+        db.tweets.remove({})
+        db.authors.remove({})
 
-        # filteredJSONTweetsList = [tw for tw in JSONTweetsList if tw["reaction"]["n_like"] > 10]
+        for tw in JSONTweetsList:
+            # ----------------------------- encodeText(tw)
+            tw['text'] = tw['text'].encode(encoding='UTF-8', errors='ignore')
+            tw['author']['username'] = tw['author']['username'].encode(encoding='UTF-8', errors='ignore')
+            tw['author']['desc'] = tw['author']['desc'].encode(encoding='UTF-8', errors='ignore')
+            # -----------------------------
+            # print(len(list(db.tweets.find({"tweet_id": tw['tweet_id']}))))
+            author = db.authors.find_one({"user_id": tw['author']['user_id']})
+
+            if author is not None:
+                tw['author'] = author['user_id']
+            else:
+                db.authors.insert_one(tw['author'])
+                tw['author'] = tw['author']['user_id']
+
+            db.tweets.insert_one(tw)
+        print(db.tweets.count(), db.authors.count())
+
+        '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
 
     # TODO implementare lo scraping di profili
     def profile_scrape(self):
