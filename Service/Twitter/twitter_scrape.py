@@ -3,11 +3,14 @@ import datetime
 import json
 import subprocess
 from typing import List, Union
+
+from pymongo.database import Database
+
 from DataModel.Twitter.author import Author
 from DataModel.Twitter.tweet import Tweet, TweetEncoder
 from DataModel.Twitter.reaction import Reaction
+from pymongo import MongoClient
 from snscrape.modules.twitter import TwitterSearchScraper
-import ast
 
 
 class TwitterScrape:
@@ -60,11 +63,10 @@ class TwitterScrape:
     def avgReaction(reaction: any) -> float:
         return (reaction["n_like"] + reaction["n_retweet"] + reaction["n_reply"] + reaction["n_quote"]) / 4
 
-
-    def keyword_scrape(self):
+    def keyword_scrape(self, db: Database):
         subprocess.check_output(
             f'snscrape -n {self.max_results} --jsonl --progress twitter-search "{self.keyword} '
-            f'since:{datetime.date(2022, 9, 24)} until:{datetime.date(2022, 9, 25)}" >'
+            f'since:{datetime.date(2022, 9, 26)}" >'
             f'./Service/Twitter/twit_scrape.txt',
             shell=True)
         results = self.strToJSON()
@@ -72,6 +74,7 @@ class TwitterScrape:
         # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
         tweets: List[Tweet] = []
         for res in results:
+
             # self.getMediaUrl(res['media'])
             tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
@@ -86,12 +89,14 @@ class TwitterScrape:
 
         JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
         # --------------------------------
-        '''x['reaction']['n_like']'''
-        JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)
+
         print(JSONTweetsList)
+        db.tweets.insert_many(JSONTweetsList)
+        '''x['reaction']['n_like']'''
+        '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)
+        return JSONTweetsList'''
 
-        #filteredJSONTweetsList = [tw for tw in JSONTweetsList if tw["reaction"]["n_like"] > 10]
-
+        # filteredJSONTweetsList = [tw for tw in JSONTweetsList if tw["reaction"]["n_like"] > 10]
 
     # TODO implementare lo scraping di profili
     def profile_scrape(self):

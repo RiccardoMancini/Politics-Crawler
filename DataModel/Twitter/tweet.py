@@ -34,5 +34,7 @@ class TweetEncoder(json.JSONEncoder):
                 dictionary[k] = ast.literal_eval(ReactionEncoder().encode(o.__dict__[k]))
             else:
                 dictionary[k] = o.__dict__[k]
+                if k == 'text':
+                    dictionary[k] = dictionary[k].encode(encoding='UTF-8', errors='strict')
 
         return dictionary

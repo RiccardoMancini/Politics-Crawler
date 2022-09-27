@@ -24,4 +24,7 @@ class AuthorEncoder(json.JSONEncoder):
         dictionary = {}
         for k in o.__dict__:
             dictionary[k] = o.__dict__[k]
+            '''if k == 'username' or k == 'desc':
+                dictionary[k] = dictionary[k].encode(encoding='UTF-8', errors='strict')'''
+        print(dictionary)
         return dictionary

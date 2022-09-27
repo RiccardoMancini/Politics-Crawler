@@ -3,20 +3,22 @@ from snscrape.modules.instagram import InstagramUserScraper, InstagramHashtagScr
 from snscrape.modules.facebook import FacebookGroupScraper
 from snscrape.modules.twitter import TwitterHashtagScraper
 from Service.Twitter.twitter_scrape import TwitterScrape
+from pymongo import MongoClient
 
 if __name__ == '__main__':
-    '''parser = argparse.ArgumentParser()
-    parser.add_argument('--configuration_file', '-cf', required=True, help="Represent the path for configuration file.")
-    args = parser.parse_args()'''
-    '''scraper = TwitterHashtagScraper('', 5)
-    print('here!')
-    for x in list(scraper.get_items())[:10]:
-        print(x)'''
-
-    # twitterScrape = TwitterScrape(profile='acmilan', max_results=10).profile_scrape()
-    # twitterScrape = TwitterScrape(hashtag='acmilan', max_results=10).hashtag()
-    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=20000).keyword_scrape()
-
+    myclient = MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["twitter_scrape"]
 
     # Per verificare il post: https://twitter.com/i/web/status/:id_post
+    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=100).keyword_scrape(mydb)
+
+
+    '''mydb.tweets.insert_many(twitterScrape)
+
+    for x in mydb.tweets.find():
+        print(x)'''
+
+
+
+
 
