@@ -49,7 +49,7 @@ class TwitterScrape:
         if not media:
             return None
         else:
-            print(media)
+            # print(media)
             if len(media) < 2:
                 s_media = media[0]
                 if 'Video' in s_media['_type']:
@@ -58,17 +58,16 @@ class TwitterScrape:
                         if var['bitrate'] is None:
                             continue
                         max_bit = max_bit if max_bit is not None and max_bit > var['bitrate'] else var['bitrate']
-                        print(var['bitrate'], max_bit)
+                        # print(var['bitrate'], max_bit)
                     videoObj = [flt for flt in filter(lambda x: x['bitrate'] == max_bit, s_media['variants'])]
-                    #print(videoObj[0]['url'], videoObj[0]['bitrate'])
+                    # print(videoObj[0]['url'], videoObj[0]['bitrate'])
                     return [videoObj[0]['url']]
+                # TODO gestire le gif
                 else:
+                    print(s_media)
                     return [s_media['fullUrl']]
             else:
                 return [s_media['fullUrl'] for s_media in media]
-
-
-
 
     @staticmethod
     def avgReaction(reaction: any) -> float:
@@ -85,26 +84,26 @@ class TwitterScrape:
         # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
         tweets: List[Tweet] = []
         for res in results:
-            print(self.getMediaUrl(res['media']))
-            '''tweet = Tweet(res['id'],
+            # print(self.getMediaUrl(res['media']))
+            tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
                           res['content'],
-                          res['media'],
+                          self.getMediaUrl(res['media']),
                           Reaction(res['likeCount'],
                                    res['replyCount'],
                                    res['retweetCount'],
                                    res['quoteCount']),
                           self.keyword)
-
             tweets.append(tweet)
 
         JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
         # --------------------------------
-        # .encode(encoding='UTF-8', errors='strict')
+
+        print(JSONTweetsList)
 
         #db.tweets.remove({})
         #db.authors.remove({})
-
+        '''
         for tw in JSONTweetsList:
             print(tw)
             if db.tweets.find_one({"_id": tw['tweet_id']}) is None:
