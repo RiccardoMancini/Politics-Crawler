@@ -11,7 +11,7 @@ class Tweet:
     This class defines the post data structure
     """
 
-    def __init__(self, tweet_id: str, author: Author, text: str, media_url: Union(str,list), reaction: Reaction, keyword: str):
+    def __init__(self, tweet_id: str, author: Author, text: str, media_url: Union[str, list], reaction: Reaction, keyword: str):
         """
         To init the object the information about
         :param author: the authors of the post

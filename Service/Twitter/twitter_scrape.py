@@ -50,7 +50,8 @@ class TwitterScrape:
             return None
         else:
             print(media)
-            for s_media in media:
+            if len(media) < 2:
+                s_media = media[0]
                 if 'Video' in s_media['_type']:
                     max_bit = None
                     for var in s_media['variants']:
@@ -59,8 +60,15 @@ class TwitterScrape:
                         max_bit = max_bit if max_bit is not None and max_bit > var['bitrate'] else var['bitrate']
                         print(var['bitrate'], max_bit)
                     videoObj = [flt for flt in filter(lambda x: x['bitrate'] == max_bit, s_media['variants'])]
-                    print(videoObj[0]['url'], videoObj[0]['bitrate'])
-                    return videoObj[0]['url']
+                    #print(videoObj[0]['url'], videoObj[0]['bitrate'])
+                    return [videoObj[0]['url']]
+                else:
+                    return [s_media['fullUrl']]
+            else:
+                return [s_media['fullUrl'] for s_media in media]
+
+
+
 
     @staticmethod
     def avgReaction(reaction: any) -> float:
@@ -77,7 +85,7 @@ class TwitterScrape:
         # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
         tweets: List[Tweet] = []
         for res in results:
-            self.getMediaUrl(res['media'])
+            print(self.getMediaUrl(res['media']))
             '''tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
                           res['content'],
