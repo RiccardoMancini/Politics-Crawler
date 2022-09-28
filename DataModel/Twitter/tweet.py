@@ -9,7 +9,7 @@ class Tweet:
     This class defines the post data structure
     """
 
-    def __init__(self, tweet_id: str, author: Author, text: str, media_url: str, reaction: Reaction):
+    def __init__(self, tweet_id: str, author: Author, text: str, media_url: str, reaction: Reaction, keyword: str):
         """
         To init the object the information about
         :param author: the authors of the post
@@ -22,6 +22,7 @@ class Tweet:
         self.text = text
         self.media_url = media_url
         self.reaction = reaction
+        self.keyword = keyword
 
 
 class TweetEncoder(json.JSONEncoder):

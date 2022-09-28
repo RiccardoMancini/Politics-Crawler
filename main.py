@@ -10,15 +10,11 @@ if __name__ == '__main__':
     mydb = myclient["twitter_scrape"]
 
     # Per verificare il post: https://twitter.com/i/web/status/:id_post
-    twitterScrape = TwitterScrape(keyword='giorgiameloni', max_results=1000).keyword_scrape(mydb)
-    #mydb.tweets.remove({})
+    twitterScrape = TwitterScrape(keyword='giuseppeconte', max_results=1000).keyword_scrape(mydb)
 
 
-    '''mydb.tweets.insert_many(twitterScrape)
-
-    for x in mydb.tweets.find():
+    '''for x in mydb.authors.find({"_id": 1531728559584206848}):
         print(x)'''
-
 
 
 

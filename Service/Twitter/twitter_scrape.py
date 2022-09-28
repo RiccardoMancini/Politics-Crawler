@@ -82,7 +82,8 @@ class TwitterScrape:
                           Reaction(res['likeCount'],
                                    res['replyCount'],
                                    res['retweetCount'],
-                                   res['quoteCount']))
+                                   res['quoteCount']),
+                          self.keyword)
 
             tweets.append(tweet)
 
@@ -90,25 +91,35 @@ class TwitterScrape:
         # --------------------------------
         # .encode(encoding='UTF-8', errors='strict')
 
-        db.tweets.remove({})
-        db.authors.remove({})
+        #db.tweets.remove({})
+        #db.authors.remove({})
 
         for tw in JSONTweetsList:
-            # ----------------------------- encodeText(tw)
-            tw['text'] = tw['text'].encode(encoding='UTF-8', errors='ignore')
-            tw['author']['username'] = tw['author']['username'].encode(encoding='UTF-8', errors='ignore')
-            tw['author']['desc'] = tw['author']['desc'].encode(encoding='UTF-8', errors='ignore')
-            # -----------------------------
-            # print(len(list(db.tweets.find({"tweet_id": tw['tweet_id']}))))
-            author = db.authors.find_one({"user_id": tw['author']['user_id']})
+            print(tw)
+            if db.tweets.find_one({"_id": tw['tweet_id']}) is None:
+                db_tweet = {"_id": tw['tweet_id']}
+                del tw['tweet_id']
+                # ----------------------------- encodeText(tw)
+                tw['text'] = tw['text'].encode(encoding='UTF-8', errors='ignore')
+                tw['keyword'] = tw['keyword'].encode(encoding='UTF-8', errors='ignore')
+                tw['author']['username'] = tw['author']['username'].encode(encoding='UTF-8', errors='ignore')
+                tw['author']['desc'] = tw['author']['desc'].encode(encoding='UTF-8', errors='ignore')
+                # -----------------------------
+                # print(len(list(db.tweets.find({"tweet_id": tw['tweet_id']}))))
+                author = db.authors.find_one({"_id": tw['author']['user_id']})
 
-            if author is not None:
-                tw['author'] = author['user_id']
-            else:
-                db.authors.insert_one(tw['author'])
-                tw['author'] = tw['author']['user_id']
+                if author is not None:
+                    tw['author'] = author['_id']
+                else:
+                    tw_app = tw['author'].copy()
+                    db_author = {"_id": tw_app['user_id']}
+                    del tw_app['user_id']
+                    db_author.update(tw_app)
+                    db.authors.insert_one(db_author)
+                    tw['author'] = tw['author']['user_id']
 
-            db.tweets.insert_one(tw)
+                db_tweet.update(tw)
+                db.tweets.insert_one(db_tweet)
         print(db.tweets.count(), db.authors.count())
 
         '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
