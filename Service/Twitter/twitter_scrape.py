@@ -62,9 +62,9 @@ class TwitterScrape:
                     videoObj = [flt for flt in filter(lambda x: x['bitrate'] == max_bit, s_media['variants'])]
                     # print(videoObj[0]['url'], videoObj[0]['bitrate'])
                     return [videoObj[0]['url']]
-                # TODO gestire le gif
+                if 'Gif' in s_media['_type']:
+                    return [s_media['variants'][0]['url']]
                 else:
-                    print(s_media)
                     return [s_media['fullUrl']]
             else:
                 return [s_media['fullUrl'] for s_media in media]
@@ -101,16 +101,18 @@ class TwitterScrape:
 
         print(JSONTweetsList)
 
-        #db.tweets.remove({})
-        #db.authors.remove({})
-        '''
+        db.tweets.remove({})
+        db.authors.remove({})
+
         for tw in JSONTweetsList:
-            print(tw)
+            #print(tw)
             if db.tweets.find_one({"_id": tw['tweet_id']}) is None:
                 db_tweet = {"_id": tw['tweet_id']}
                 del tw['tweet_id']
                 # ----------------------------- encodeText(tw)
                 tw['text'] = tw['text'].encode(encoding='UTF-8', errors='ignore')
+                if tw['media_url'] is not None:
+                    tw['media_url'] = [url.encode(encoding='UTF-8', errors='ignore') for url in tw['media_url']]
                 tw['keyword'] = tw['keyword'].encode(encoding='UTF-8', errors='ignore')
                 tw['author']['username'] = tw['author']['username'].encode(encoding='UTF-8', errors='ignore')
                 tw['author']['desc'] = tw['author']['desc'].encode(encoding='UTF-8', errors='ignore')
@@ -130,7 +132,7 @@ class TwitterScrape:
 
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
-        print(db.tweets.count(), db.authors.count())'''
+        print(db.tweets.count(), db.authors.count())
 
         '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
 
