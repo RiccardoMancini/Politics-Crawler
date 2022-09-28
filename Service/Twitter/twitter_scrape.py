@@ -46,18 +46,21 @@ class TwitterScrape:
 
     @staticmethod
     def getMediaUrl(media: dict):
-        # print(len(media))
         if not media:
             return None
         else:
+            print(media)
             for s_media in media:
                 if 'Video' in s_media['_type']:
                     max_bit = None
                     for var in s_media['variants']:
-                        max_bit = max_bit if max_bit is not None and var['bitrate'] is not None and \
-                                             max_bit > var['bitrate'] else var['bitrate']
+                        if var['bitrate'] is None:
+                            continue
+                        max_bit = max_bit if max_bit is not None and max_bit > var['bitrate'] else var['bitrate']
                         print(var['bitrate'], max_bit)
-                # TODO da finire l'estrazione di media
+                    videoObj = [flt for flt in filter(lambda x: x['bitrate'] == max_bit, s_media['variants'])]
+                    print(videoObj[0]['url'], videoObj[0]['bitrate'])
+                    return videoObj[0]['url']
 
     @staticmethod
     def avgReaction(reaction: any) -> float:
@@ -74,8 +77,8 @@ class TwitterScrape:
         # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
         tweets: List[Tweet] = []
         for res in results:
-            # self.getMediaUrl(res['media'])
-            tweet = Tweet(res['id'],
+            self.getMediaUrl(res['media'])
+            '''tweet = Tweet(res['id'],
                           self.getAuthorInfo(res['user']),
                           res['content'],
                           res['media'],
@@ -120,7 +123,7 @@ class TwitterScrape:
 
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
-        print(db.tweets.count(), db.authors.count())
+        print(db.tweets.count(), db.authors.count())'''
 
         '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
 

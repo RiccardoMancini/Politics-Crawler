@@ -10,7 +10,7 @@ if __name__ == '__main__':
     mydb = myclient["twitter_scrape"]
 
     # Per verificare il post: https://twitter.com/i/web/status/:id_post
-    twitterScrape = TwitterScrape(keyword='giuseppeconte', max_results=1000).keyword_scrape(mydb)
+    twitterScrape = TwitterScrape(keyword='milan', max_results=50).keyword_scrape(mydb)
 
 
     '''for x in mydb.authors.find({"_id": 1531728559584206848}):
