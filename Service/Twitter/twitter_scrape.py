@@ -1,8 +1,8 @@
 import collections
-import datetime
+from datetime import datetime, timedelta, date
 import json
 import subprocess
-from typing import List, Union
+from typing import List, Union, Iterable
 
 from pymongo.database import Database
 
@@ -16,13 +16,13 @@ from snscrape.modules.twitter import TwitterSearchScraper
 class TwitterScrape:
 
     def __init__(self, profile: str = "", hashtag: str = "", keyword: str = "", max_results: int = 100,
-                 since: datetime = None, until: datetime = None):
+                 since: date = None, until: date = None):
         self.profileStr = profile
         self.hashtagStr = hashtag
         self.keyword = keyword
         self.max_results = max_results
-        self.since = since if since is not None else datetime.datetime.min
-        self.until = until if until is not None else datetime.datetime.now()
+        self.since = since if since is not None else datetime.now().date() - timedelta(days=1)
+        self.until = until if until is not None else datetime.now().date()
 
     @staticmethod
     def strToJSON() -> collections.Iterable:
@@ -73,15 +73,7 @@ class TwitterScrape:
     def avgReaction(reaction: any) -> float:
         return (reaction["n_like"] + reaction["n_retweet"] + reaction["n_reply"] + reaction["n_quote"]) / 4
 
-    def keyword_scrape(self, db: Database):
-        subprocess.check_output(
-            f'snscrape -n {self.max_results} --jsonl --progress twitter-search "{self.keyword} '
-            f'since:{datetime.date(2022, 9, 23)} until:{datetime.date(2022, 9, 25)}" >'
-            f'./Service/Twitter/twit_scrape.txt',
-            shell=True)
-        results = self.strToJSON()
-
-        # -------------------------------- jsonTweetsListBuild(results): Array<JSON>
+    def getListOfTweets(self, results: Iterable) -> List[dict]:
         tweets: List[Tweet] = []
         for res in results:
             # print(self.getMediaUrl(res['media']))
@@ -96,28 +88,36 @@ class TwitterScrape:
                           self.keyword)
             tweets.append(tweet)
 
-        JSONTweetsList = [TweetEncoder().default(tw) for tw in tweets]
-        # --------------------------------
+        return [TweetEncoder().default(tw) for tw in tweets]
 
+    @staticmethod
+    def encodeStr(*args):
+        argsCoded = []
+        for text in args:
+            argsCoded.append(text.encode(encoding='UTF-8', errors='ignore'))
+        return argsCoded
+
+    def keyword_scrape(self, db: Database) -> None:
+        subprocess.check_output(
+            f'snscrape -n {self.max_results} --jsonl --progress twitter-search "{self.keyword} '
+            f'since:{self.since} until:{self.until}" >'
+            f'./Service/Twitter/twit_scrape.txt',
+            shell=True)
+        results: Iterable = self.strToJSON()
+
+        JSONTweetsList: List[dict] = self.getListOfTweets(results)
         print(JSONTweetsList)
-
-        db.tweets.remove({})
-        db.authors.remove({})
 
         for tw in JSONTweetsList:
             #print(tw)
             if db.tweets.find_one({"_id": tw['tweet_id']}) is None:
                 db_tweet = {"_id": tw['tweet_id']}
                 del tw['tweet_id']
-                # ----------------------------- encodeText(tw)
-                tw['text'] = tw['text'].encode(encoding='UTF-8', errors='ignore')
+                tw['text'], tw['keyword'], tw['author']['username'], tw['author']['desc'] = \
+                    self.encodeStr(tw['text'], tw['keyword'], tw['author']['username'], tw['author']['desc'])
                 if tw['media_url'] is not None:
                     tw['media_url'] = [url.encode(encoding='UTF-8', errors='ignore') for url in tw['media_url']]
-                tw['keyword'] = tw['keyword'].encode(encoding='UTF-8', errors='ignore')
-                tw['author']['username'] = tw['author']['username'].encode(encoding='UTF-8', errors='ignore')
-                tw['author']['desc'] = tw['author']['desc'].encode(encoding='UTF-8', errors='ignore')
-                # -----------------------------
-                # print(len(list(db.tweets.find({"tweet_id": tw['tweet_id']}))))
+
                 author = db.authors.find_one({"_id": tw['author']['user_id']})
 
                 if author is not None:
@@ -132,6 +132,7 @@ class TwitterScrape:
 
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
+
         print(db.tweets.count(), db.authors.count())
 
         '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
