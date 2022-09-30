@@ -118,7 +118,7 @@ class TwitterScrape:
 
                 if tw['media_url'] is not None:
                     tw['media_url'] = [url.encode(encoding='UTF-8', errors='ignore') for url in tw['media_url']]
-                #print(tw)
+                # print(tw)
 
                 author = db.authors.find_one({"_id": tw['author']['user_id']})
                 if author is not None:
@@ -134,10 +134,11 @@ class TwitterScrape:
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
             else:
-                #print(tweetEx)
                 new_keyword = self.encodeStr(tw['keyword'][0])
-                tweetEx['keyword'].append(new_keyword[0])
-                db.tweets.save(tweetEx)
+                print(new_keyword in tweetEx['keyword'])
+                if new_keyword not in tweetEx['keyword']:
+                    tweetEx['keyword'].append(new_keyword[0])
+                    db.tweets.save(tweetEx)
 
         print(db.tweets.count(), db.authors.count())
 

@@ -9,17 +9,27 @@ from datetime import date
 # Per verificare il post: https://twitter.com/i/web/status/:id_post
 
 if __name__ == '__main__':
+    # Parameters for scraping
+    keywords = ['enricoletta', 'partitodemocratico', 'giorgiameloni', 'fratelliditalia',
+                'matteosalvini', 'lega', 'silvioberlusconi', 'forzaitalia',
+                'giuseppeconte', 'movimento5stelle']
+    date_i = date(2022, 9, 23)
+    date_f = date(2022, 9, 25)
+    max_tweets = 50
+
+    # MongoDB connection
     myclient = MongoClient("mongodb://localhost:27017/")
     mydb = myclient["twitter_scrape"]
-    mydb.tweets.delete_many({})
-    mydb.authors.delete_many({})
-    keywords = ['enricoletta']
+    #mydb.tweets.delete_many({})
+    #mydb.authors.delete_many({})
 
-    for keyword in keywords:
+    # Extraction of tweets by keywords
+    for keyword in keywords[:2]:
+        print('Scraping: ', keyword)
         TwitterScrape(keyword=keyword,
-                      max_results=50,
-                      since=date(2022, 9, 23),
-                      until=date(2022, 9, 25)).keyword_scrape(mydb)
+                      max_results=max_tweets,
+                      since=date_i,
+                      until=date_f).keyword_scrape(mydb)
 
     for x in mydb.tweets.aggregate([
         {"$unwind": "$keyword"},
