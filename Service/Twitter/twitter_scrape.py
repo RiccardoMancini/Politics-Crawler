@@ -85,7 +85,7 @@ class TwitterScrape:
                                    res['replyCount'],
                                    res['retweetCount'],
                                    res['quoteCount']),
-                          self.keyword)
+                          [self.keyword])
             tweets.append(tweet)
 
         return [TweetEncoder().default(tw) for tw in tweets]
@@ -109,17 +109,18 @@ class TwitterScrape:
         print(JSONTweetsList)
 
         for tw in JSONTweetsList:
-            #print(tw)
-            if db.tweets.find_one({"_id": tw['tweet_id']}) is None:
+            tweetEx = db.tweets.find_one({"_id": tw['tweet_id']})
+            if tweetEx is None:
                 db_tweet = {"_id": tw['tweet_id']}
                 del tw['tweet_id']
-                tw['text'], tw['keyword'], tw['author']['username'], tw['author']['desc'] = \
-                    self.encodeStr(tw['text'], tw['keyword'], tw['author']['username'], tw['author']['desc'])
+                tw['text'], tw['keyword'][0], tw['author']['username'], tw['author']['desc'] = \
+                    self.encodeStr(tw['text'], tw['keyword'][0], tw['author']['username'], tw['author']['desc'])
+
                 if tw['media_url'] is not None:
                     tw['media_url'] = [url.encode(encoding='UTF-8', errors='ignore') for url in tw['media_url']]
+                #print(tw)
 
                 author = db.authors.find_one({"_id": tw['author']['user_id']})
-
                 if author is not None:
                     tw['author'] = author['_id']
                 else:
@@ -132,6 +133,11 @@ class TwitterScrape:
 
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
+            else:
+                #print(tweetEx)
+                new_keyword = self.encodeStr(tw['keyword'][0])
+                tweetEx['keyword'].append(new_keyword[0])
+                db.tweets.save(tweetEx)
 
         print(db.tweets.count(), db.authors.count())
 
