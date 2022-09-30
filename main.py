@@ -10,9 +10,11 @@ from datetime import date
 
 if __name__ == '__main__':
     # Parameters for scraping
-    keywords = ['enricoletta', 'partitodemocratico', 'giorgiameloni', 'fratelliditalia',
-                'matteosalvini', 'lega', 'silvioberlusconi', 'forzaitalia',
-                'giuseppeconte', 'movimento5stelle']
+    keywords = ['enricoletta', 'partitodemocratico', 'pdnetwork',
+                'giorgiameloni', 'fratelliditalia',
+                'matteosalvini', 'legasalvini',
+                'berlusconi', 'forzaitalia', 'forza_italia'
+                'giuseppeconte', 'mov5stelle']
     date_i = date(2022, 9, 23)
     date_f = date(2022, 9, 25)
     max_tweets = 50
@@ -20,12 +22,12 @@ if __name__ == '__main__':
     # MongoDB connection
     myclient = MongoClient("mongodb://localhost:27017/")
     mydb = myclient["twitter_scrape"]
-    #mydb.tweets.delete_many({})
-    #mydb.authors.delete_many({})
+    mydb.tweets.delete_many({})
+    mydb.authors.delete_many({})
 
     # Extraction of tweets by keywords
-    for keyword in keywords[:2]:
-        print('Scraping: ', keyword)
+    for keyword in keywords[:3]:
+        print('Scraping tweets with keyword: ', keyword)
         TwitterScrape(keyword=keyword,
                       max_results=max_tweets,
                       since=date_i,
@@ -36,8 +38,10 @@ if __name__ == '__main__':
         {"$group": {"_id": '$keyword', "count": {"$count": {}}}}]):
         print(x)
 
+    print(mydb.tweets.count_documents({}), mydb.authors.count_documents({}))
+
     '''for x in mydb.tweets.aggregate([{"$group": {"_id": '$author', "count": {"$sum": 1}}}]):
         print(x)'''
 
-    '''for x in mydb.tweets.find({}):
-        print(x)'''
+    for x in mydb.tweets.find({}):
+        print(x['text'], x['keyword'])

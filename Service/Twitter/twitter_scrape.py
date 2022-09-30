@@ -106,7 +106,7 @@ class TwitterScrape:
         results: Iterable = self.strToJSON()
 
         JSONTweetsList: List[dict] = self.getListOfTweets(results)
-        print(JSONTweetsList)
+        #print(JSONTweetsList)
 
         for tw in JSONTweetsList:
             tweetEx = db.tweets.find_one({"_id": tw['tweet_id']})
@@ -115,10 +115,8 @@ class TwitterScrape:
                 del tw['tweet_id']
                 tw['text'], tw['keyword'][0], tw['author']['username'], tw['author']['desc'] = \
                     self.encodeStr(tw['text'], tw['keyword'][0], tw['author']['username'], tw['author']['desc'])
-
                 if tw['media_url'] is not None:
                     tw['media_url'] = [url.encode(encoding='UTF-8', errors='ignore') for url in tw['media_url']]
-                # print(tw)
 
                 author = db.authors.find_one({"_id": tw['author']['user_id']})
                 if author is not None:
@@ -134,13 +132,14 @@ class TwitterScrape:
                 db_tweet.update(tw)
                 db.tweets.insert_one(db_tweet)
             else:
-                new_keyword = self.encodeStr(tw['keyword'][0])
-                print(new_keyword in tweetEx['keyword'])
+                new_keyword = self.encodeStr(tw['keyword'][0])[0]
+                # print(new_keyword not in tweetEx['keyword'], new_keyword, tweetEx['keyword'])
                 if new_keyword not in tweetEx['keyword']:
-                    tweetEx['keyword'].append(new_keyword[0])
+                    tweetEx['keyword'].append(new_keyword)
+                    print(tweetEx)
                     db.tweets.save(tweetEx)
 
-        print(db.tweets.count(), db.authors.count())
+        # print(db.tweets.count(), db.authors.count())
 
         '''JSONTweetsList.sort(key=lambda x: self.avgReaction(x['reaction']), reverse=False)'''
 
