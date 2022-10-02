@@ -10,26 +10,21 @@ from datetime import date
 
 if __name__ == '__main__':
     # Parameters for scraping
-    keywords = ['enricoletta', 'partitodemocratico', 'pdnetwork',
-                'giorgiameloni', 'fratelliditalia',
-                'matteosalvini', 'legasalvini',
-                'berlusconi', 'forzaitalia', 'forza_italia'
-                'giuseppeconte', 'mov5stelle']
-    date_i = date(2022, 9, 23)
-    date_f = date(2022, 9, 25)
+    keywords = ['movimento5stelle']
+    date_i = date(2022, 9, 19)
+    date_f = date(2022, 9, 24)
     max_tweets = 50
 
     # MongoDB connection
     myclient = MongoClient("mongodb://localhost:27017/")
     mydb = myclient["twitter_scrape"]
-    mydb.tweets.delete_many({})
-    mydb.authors.delete_many({})
+    #mydb.tweets.delete_many({})
+    #mydb.authors.delete_many({})
 
     # Extraction of tweets by keywords
-    for keyword in keywords[:3]:
+    for keyword in keywords:
         print('Scraping tweets with keyword: ', keyword)
         TwitterScrape(keyword=keyword,
-                      max_results=max_tweets,
                       since=date_i,
                       until=date_f).keyword_scrape(mydb)
 
@@ -43,5 +38,5 @@ if __name__ == '__main__':
     '''for x in mydb.tweets.aggregate([{"$group": {"_id": '$author', "count": {"$sum": 1}}}]):
         print(x)'''
 
-    for x in mydb.tweets.find({}):
-        print(x['text'], x['keyword'])
+    '''for x in mydb.tweets.find({})[150000:150100]:
+        print(x['text'], x['media_url'], x['keyword'])'''

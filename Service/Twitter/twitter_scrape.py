@@ -99,7 +99,7 @@ class TwitterScrape:
 
     def keyword_scrape(self, db: Database) -> None:
         subprocess.check_output(
-            f'snscrape -n {self.max_results} --jsonl --progress twitter-search "{self.keyword} '
+            f'snscrape --jsonl --progress twitter-search "{self.keyword} '
             f'since:{self.since} until:{self.until}" >'
             f'./Service/Twitter/twit_scrape.txt',
             shell=True)
@@ -136,7 +136,7 @@ class TwitterScrape:
                 # print(new_keyword not in tweetEx['keyword'], new_keyword, tweetEx['keyword'])
                 if new_keyword not in tweetEx['keyword']:
                     tweetEx['keyword'].append(new_keyword)
-                    print(tweetEx)
+                    #print(tweetEx)
                     db.tweets.save(tweetEx)
 
         # print(db.tweets.count(), db.authors.count())
