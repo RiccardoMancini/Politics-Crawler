@@ -10,24 +10,28 @@ from datetime import date
 
 if __name__ == '__main__':
     # Parameters for scraping
-    keywords = ['GiuseppeConteIT']
+    keywords = ['enricoletta', 'partitodemocratico', 'pdnetwork',
+                'giorgiameloni', 'fratelliditalia', 'meloni',
+                'matteosalvini', 'legasalvini', 'matteosalvinimi', 'salvini',
+                'berlusconi', 'forza_italia',
+                'giuseppeconte', 'mov5stelle', 'movimento5stelle', 'GiuseppeConteIT']
 
     date_i = date(2022, 9, 12)
     date_f = date(2022, 9, 24)
-    max_tweets = 50
+    # max_tweets = 50
 
     # MongoDB connection
     myclient = MongoClient("mongodb://localhost:27017/")
-    mydb = myclient["twitter_scrape"]
+    mydb = myclient["twitter_scrape_db"]
     # mydb.tweets.delete_many({})
     # mydb.authors.delete_many({})
 
     # Extraction of tweets by @keywords
-    for keyword in keywords:
+    '''for keyword in keywords:
         print('Scraping tweets with keyword: ', keyword)
         TwitterScrape(keyword=keyword,
                       since=date_i,
-                      until=date_f).keyword_scrape(mydb)
+                      until=date_f).keyword_scrape(mydb)'''
 
     print(mydb.tweets.count_documents({}), mydb.authors.count_documents({}))
 
