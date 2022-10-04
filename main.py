@@ -10,8 +10,9 @@ from datetime import date
 
 if __name__ == '__main__':
     # Parameters for scraping
-    keywords = ['meloni']
-    date_i = date(2022, 9, 19)
+    keywords = ['GiuseppeConteIT']
+
+    date_i = date(2022, 9, 12)
     date_f = date(2022, 9, 24)
     max_tweets = 50
 
@@ -22,11 +23,11 @@ if __name__ == '__main__':
     # mydb.authors.delete_many({})
 
     # Extraction of tweets by @keywords
-    '''for keyword in keywords:
+    for keyword in keywords:
         print('Scraping tweets with keyword: ', keyword)
         TwitterScrape(keyword=keyword,
                       since=date_i,
-                      until=date_f).keyword_scrape(mydb)'''
+                      until=date_f).keyword_scrape(mydb)
 
     print(mydb.tweets.count_documents({}), mydb.authors.count_documents({}))
 
@@ -39,5 +40,8 @@ if __name__ == '__main__':
         {"$group": {"_id": '$keyword', "count": {"$count": {}}}}]):
         print(x)
 
-    for x in mydb.tweets.find({})[150000:150100]:
-        print(x['text'], x['media_url'], x['keyword'])
+    '''for x in mydb.tweets.find({"reaction.n_like": {"$gt": 20}})[500:1000]:
+        print(x)'''
+
+    '''for x in mydb.authors.find({"_id": 529247064}):
+        print(x)'''
