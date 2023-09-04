@@ -1,4 +1,5 @@
 # Twitter scraper elezioni 2022
+Attività di ricerca finalizzata alla creazione di uno scraper per la raccolta di dati relativi a questo evento, al fine di sviluppare un dataset completo.
 ### Keywords utilizzate
 - 'enricoletta', 'partitodemocratico', 'pdnetwork'
 - 'giorgiameloni', 'fratelliditalia', 'meloni'
@@ -6,7 +7,7 @@
 - 'berlusconi', 'forza_italia'
 - 'giuseppeconte', 'mov5stelle', 'movimento5stelle', 'GiuseppeConteIT'
 
-### Esempio formato "tweets"
+### Esempio formato JSON dei tweet estratti
 ```
 {
    "_id": 1571836155380858881,
