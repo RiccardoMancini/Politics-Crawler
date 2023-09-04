@@ -1,4 +1,4 @@
-# Social-Crawler
+# Twitter scraper elezioni 2022
 ### Keywords utilizzate
 - 'enricoletta', 'partitodemocratico', 'pdnetwork'
 - 'giorgiameloni', 'fratelliditalia', 'meloni'
