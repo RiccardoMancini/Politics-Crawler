@@ -27,25 +27,25 @@ if __name__ == '__main__':
     # mydb.authors.delete_many({})
 
     # Extraction of tweets by @keywords
-    '''for keyword in keywords:
+    for keyword in keywords:
         print('Scraping tweets with keyword: ', keyword)
         TwitterScrape(keyword=keyword,
                       since=date_i,
-                      until=date_f).keyword_scrape(mydb)'''
+                      until=date_f).keyword_scrape(mydb)
 
     print(mydb.tweets.count_documents({}), mydb.authors.count_documents({}))
 
     # Some queries...
-    '''for x in mydb.tweets.find({"keyword": [b'giorgiameloni']})[:100]:
-        print(x['text'], x['media_url'], x['keyword'])'''
+    for x in mydb.tweets.find({"keyword": [b'giorgiameloni']})[:100]:
+        print(x['text'], x['media_url'], x['keyword'])
 
     for x in mydb.tweets.aggregate([
         {"$unwind": "$keyword"},
         {"$group": {"_id": '$keyword', "count": {"$count": {}}}}]):
         print(x)
 
-    '''for x in mydb.tweets.find({"reaction.n_like": {"$gt": 20}})[500:1000]:
-        print(x)'''
+    for x in mydb.tweets.find({"reaction.n_like": {"$gt": 20}})[500:1000]:
+        print(x)
 
-    '''for x in mydb.authors.find({"_id": 529247064}):
-        print(x)'''
+    for x in mydb.authors.find({"_id": 529247064}):
+        print(x)
