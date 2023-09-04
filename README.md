@@ -1,5 +1,5 @@
-# Twitter scraper elezioni 2022
-Attività di ricerca finalizzata alla creazione di uno scraper per la raccolta di dati relativi a questo evento, al fine di sviluppare un dataset completo.
+# Twitter scraper
+Attività di ricerca finalizzata alla creazione di uno scraper per la raccolta di dati relativi alle elezioni politiche 2022 in Italia, al fine di sviluppare un dataset completo.
 ### Keywords utilizzate
 - 'enricoletta', 'partitodemocratico', 'pdnetwork'
 - 'giorgiameloni', 'fratelliditalia', 'meloni'
